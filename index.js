@@ -47,6 +47,8 @@ async function run() {
       const skipNum = parseInt(skip);
       const limitNum = parseInt(limit);
       const query = type ? { category: type } : {};
+      const search = req.query.search;
+      console.log("search--->", search);
 
       try {
         const result = await booksCollection.find(query).skip(skipNum).limit(limitNum).toArray();
