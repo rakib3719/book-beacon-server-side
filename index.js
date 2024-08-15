@@ -61,14 +61,14 @@ async function run() {
     
     // Endpoint to get books with pagination and filtering by category/type
     app.get('/books', async (req, res) => {
-        const { skip = 0, limit = 10, search, category } = req.query;
+        const { skip = 0, limit = 10, search, category, sort } = req.query;
         const skipNum = parseInt(skip);
         const limitNum = parseInt(limit);
-        
+    
         // Initialize query object
         const query = {};
     
-        // Add type filter if provided
+        // Add category filter if provided
         if (category) {
             query.category = category;
         }
@@ -83,13 +83,35 @@ async function run() {
         }
     
         try {
-            const result = await booksCollection.find(query).skip(skipNum).limit(limitNum).toArray();
+            // Initialize sorting object
+            const sortOptions = {};
+    
+            // Add sorting based on the sort query parameter
+            if (sort) {
+                if (sort === "priceLow") {
+                    sortOptions.price = 1; // Sort by price in ascending order (low to high)
+                } else if (sort === "priceHigh") {
+                    sortOptions.price = -1; // Sort by price in descending order (high to low)
+                } else if (sort === "newestDate") {
+                    sortOptions.publicationDate = -1; // Sort by publication date in descending order (new to old)
+                } else if (sort === "oldestDate") {
+                    sortOptions.publicationDate = 1; // Sort by publication date in ascending order (old to new)
+                }
+            }
+    
+            const result = await booksCollection.find(query)
+                .sort(sortOptions)
+                .skip(skipNum)
+                .limit(limitNum)
+                .toArray();
+    
             res.send(result);
         } catch (error) {
             console.error("Error fetching books:", error);
             res.status(500).json({ message: 'Failed to fetch books', error });
         }
     });
+    
     
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
