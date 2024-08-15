@@ -37,7 +37,7 @@ async function run() {
         res.send({ count: result });
       } catch (error) {
         console.error("Error counting books documents:", error);
-        res.status(500).json({ message: 'Failed to count books documents', error });
+        res.status(500).json({ message: 'Failed to count books document', error });
       }
     });
 
