@@ -10,7 +10,7 @@ app.use(cors())
 app.use(express.json())
 app.use(cookieParser())
 
-const uri = "mongodb+srv://bannah76769:PVgRlyOvTFNd4ZnC@cluster0.ngsjczb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.ngsjczb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -24,16 +24,31 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server (optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const booksCollection = client.db('BookBeacon').collection('Books')
 
     // Endpoint to count books based on category/type
     app.get('/countBooks', async (req, res) => {
-        const { category, search } = req.query;
+        const { category, search , publication,minPrice,maxPrice } = req.query;
         
         // Initialize query object
-        const query = {};
+        const minPriceNum =  parseInt(minPrice);
+        const maxPriceNum = parseInt(maxPrice)
+      
+          // Initialize query object
+          const query = {};
+          console.log(minPriceNum);
+  
+          if (minPriceNum !=="undefined" && maxPriceNum !== "undefined") {
+              query.price = { $gte: minPriceNum, $lte: maxPriceNum };
+          }
+
+
+
+        if(publication){
+            query.publication = publication
+        }
     
         // Add category filter if provided
         if (category) {
@@ -61,12 +76,19 @@ async function run() {
     
     // Endpoint to get books with pagination and filtering by category/type
     app.get('/books', async (req, res) => {
-        const { skip = 0, limit = 10, search, category, sort, publication } = req.query;
+        const { skip = 0, limit = 10, search, category, sort, publication,minPrice,maxPrice } = req.query;
         const skipNum = parseInt(skip);
         const limitNum = parseInt(limit);
+      const minPriceNum =  parseInt(minPrice);
+      const maxPriceNum = parseInt(maxPrice)
     
         // Initialize query object
         const query = {};
+        console.log(minPriceNum);
+
+        if (minPriceNum !=="undefined" && maxPriceNum !== "undefined") {
+            query.price = { $gte: minPriceNum, $lte: maxPriceNum };
+        }
     
         // Add category filter if provided
 
