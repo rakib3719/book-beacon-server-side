@@ -61,7 +61,7 @@ async function run() {
     
     // Endpoint to get books with pagination and filtering by category/type
     app.get('/books', async (req, res) => {
-        const { skip = 0, limit = 10, search, category, sort } = req.query;
+        const { skip = 0, limit = 10, search, category, sort, publication } = req.query;
         const skipNum = parseInt(skip);
         const limitNum = parseInt(limit);
     
@@ -69,6 +69,10 @@ async function run() {
         const query = {};
     
         // Add category filter if provided
+
+        if(publication){
+            query.publication = publication
+        }
         if (category) {
             query.category = category;
         }
