@@ -36,8 +36,8 @@ Ensure you have the following installed:
 
 Create a .env file in the root of the project and add your MongoDB credentials:
 
-USER= your_mongodb_username
-PASSWORD= your_mongodb_password
+- USER= your_mongodb_username
+- PASSWORD= your_mongodb_password
 
 3. **Start the Development Server:**
 
